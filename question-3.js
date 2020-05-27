@@ -2,14 +2,8 @@
 
 function solution(relation) {
   const answer = [];
-  const candidates = [];
+  let candidates = [];
   const students = [];
-  const attributes = {
-    studentNumber: null,
-    name: null,
-    major: null,
-    grade: null
-  };
 
   for (const relationArr of relation) {
     const [studentNumber, name, major, grade] = relationArr;
@@ -21,27 +15,51 @@ function solution(relation) {
     });
   }
 
-  attributes.studentNumber =
-    students
-      .map((student) => student.studentNumber)
-      .filter((studentNumber, idx, arr) => idx == arr.indexOf(studentNumber)).length ==
-    students.map((student) => student.studentNumber).length;
+  for (let i = 0; i < Object.keys(students[0]).length; i++) {
+    const keys = Object.keys(students[0]);
+    candidates.push([keys[i]]);
+  }
 
-  attributes.name =
-    students
-      .map((student) => student.name)
-      .filter((studentName, idx, arr) => idx == arr.indexOf(studentName)).length ==
-    students.map((student) => student.name).length;
+  for (let i = 0; i < Object.keys(students[0]).length; i++) {
+    const keys = [];
+    for (let j = 0; j <= i; j++) {
+      keys.push(Object.keys(students[0])[j]);
+    }
+    candidates.push(keys);
+  }
 
-  attributes.major =
-    students
-      .map((student) => student.major)
-      .filter((studentMajor, idx, arr) => idx == arr.indexOf(studentMajor)).length ==
-    students.map((student) => student.major).length;
+  for (const candidate of candidates) {
+    const currAttrs = {};
+    const compareAttrs = {};
 
-  console.log({ attributes });
+    for (const attr of candidate) {
+      currAttrs[attr] = students.map((student) => student[attr]);
+      compareAttrs[attr] = students.map((student) => student[attr]);
+    }
 
-  return answer;
+    let currAttrsArr = [];
+    const compareAttrsArr = [];
+
+    for (const attr in currAttrs) {
+      for (let i = 0; i < currAttrs[attr].length; i++) {
+        currAttrsArr[i] = `${currAttrsArr[i] || ''} ${currAttrs[attr][i]}`;
+      }
+    }
+
+    currAttrsArr = currAttrsArr.filter((attrVal, idx) => idx == currAttrsArr.indexOf(attrVal));
+
+    for (const attr in compareAttrs) {
+      for (let i = 0; i < compareAttrs[attr].length; i++) {
+        compareAttrsArr[i] = `${compareAttrsArr[i] || ''} ${compareAttrs[attr][i]}`;
+      }
+    }
+
+    if (currAttrsArr.length == compareAttrsArr.length) {
+      answer.push(true);
+    }
+  }
+
+  return Math.floor(answer.length / 2);
 }
 
 const exampleRelation = [
@@ -54,4 +72,4 @@ const exampleRelation = [
 ];
 const exampleAnswer = solution(exampleRelation);
 
-// console.log({ exampleAnswer });
+console.log({ exampleAnswer });
